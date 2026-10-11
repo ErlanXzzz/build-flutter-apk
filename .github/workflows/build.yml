@@ -44,16 +44,16 @@ jobs:
           cd android
           ./gradlew assembleRelease --no-daemon
 
-      # PERBAIKAN: Sign APK agar bisa di-install di Android
+      # PERBAIKAN: Download & Jalankan Uber APK Signer otomatis
       - name: Sign Release APK
-        uses: rxdew/sign-sdk-android-action@v1
-        with:
-          releaseDirectory: android/app/build/outputs/apk/release
+        run: |
+          wget -O uber-apk-signer.jar https://github.com/patrickfav/uber-apk-signer/releases/download/v1.3.0/uber-apk-signer-1.3.0.jar
+          java -jar uber-apk-signer.jar --apks android/app/build/outputs/apk/release/*.apk --overwrite
 
-      - name: Rename APK
+      - name: Rename & Prepare APK
         run: |
           mkdir -p output
-          find android/app/build/outputs/apk/release/ -name "*-signed.apk" -o -name "*.apk" | head -1 | xargs -I{} cp {} output/SyncXxX.apk
+          find android/app/build/outputs/apk/release/ -name "*.apk" | head -1 | xargs -I{} cp {} output/SyncXxX.apk
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
