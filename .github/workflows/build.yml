@@ -44,10 +44,16 @@ jobs:
           cd android
           ./gradlew assembleRelease --no-daemon
 
+      # PERBAIKAN: Sign APK agar bisa di-install di Android
+      - name: Sign Release APK
+        uses: rxdew/sign-sdk-android-action@v1
+        with:
+          releaseDirectory: android/app/build/outputs/apk/release
+
       - name: Rename APK
         run: |
           mkdir -p output
-          find android/app/build/outputs/apk/release/ -name "*.apk" | head -1 | xargs -I{} cp {} output/SyncXxX.apk
+          find android/app/build/outputs/apk/release/ -name "*-signed.apk" -o -name "*.apk" | head -1 | xargs -I{} cp {} output/SyncXxX.apk
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
